@@ -600,20 +600,29 @@
 
         <div id="statusMessage" class="hidden"></div>
 
-        <div class="dashboard">
-            <div class="dashboard-card success">
-                <h3>Entregas Realizadas</h3>
-                <div class="value" id="totalEntregues">0</div>
-            </div>
-            <div class="dashboard-card">
-                <h3>Em Trânsito</h3>
-                <div class="value" id="totalEmRota">0</div>
-            </div>
-            <div class="dashboard-card danger">
-                <h3>Fora do Prazo</h3>
-                <div class="value" id="totalForaPrazo">0</div>
-            </div>
-        </div>
+
+<div class="dashboard">
+    <div class="dashboard-card success">
+        <h3>Entregas Realizadas</h3>
+        <div class="value" id="totalEntregues">0</div>
+    </div>
+    <div class="dashboard-card">
+        <h3>Em Trânsito</h3>
+        <div class="value" id="totalEmRota">0</div>
+    </div>
+    <div class="dashboard-card danger">
+        <h3>Fora do Prazo</h3>
+        <div class="value" id="totalForaPrazo">0</div>
+    </div>
+    <div class="dashboard-card" style="background: linear-gradient(135deg, #3d00cd, #380294ca);">
+        <h3>Frete</h3>
+        <div class="value" id="totalFrete">R$ 0,00</div>
+    </div>
+    <div class="dashboard-card" style="background: linear-gradient(135deg, #06B6D4, #0891B2);">
+        <h3>Faturamento Total</h3>
+        <div class="value" id="totalNotas">R$ 0,00</div>
+    </div>
+</div>
 
         <button onclick="openFormModal()" style="margin-bottom: 2rem;">
             Novo Registro de Frete
@@ -1065,15 +1074,21 @@
             }).join('');
         }
 
-        function updateDashboard() {
-            const entregues = fretes.filter(f => f.entregue).length;
-            const foraPrazo = fretes.filter(f => !f.entregue && getStatus(f) === 'Fora do Prazo').length;
-            const emRota = fretes.filter(f => !f.entregue && getStatus(f) === 'Em Trânsito').length;
+       function updateDashboard() {
+    const entregues = fretes.filter(f => f.entregue).length;
+    const foraPrazo = fretes.filter(f => !f.entregue && getStatus(f) === 'Fora do Prazo').length;
+    const emRota = fretes.filter(f => !f.entregue && getStatus(f) === 'Em Trânsito').length;
 
-            document.getElementById('totalEntregues').textContent = entregues;
-            document.getElementById('totalForaPrazo').textContent = foraPrazo;
-            document.getElementById('totalEmRota').textContent = emRota;
-        }
+    // Calcula os totais financeiros
+    const totalFrete = fretes.reduce((sum, frete) => sum + (frete.valorFrete || 0), 0);
+    const totalNotas = fretes.reduce((sum, frete) => sum + (frete.valor || 0), 0);
+
+    document.getElementById('totalEntregues').textContent = entregues;
+    document.getElementById('totalForaPrazo').textContent = foraPrazo;
+    document.getElementById('totalEmRota').textContent = emRota;
+    document.getElementById('totalFrete').textContent = formatCurrency(totalFrete);
+    document.getElementById('totalNotas').textContent = formatCurrency(totalNotas);
+}
 
         function filterFretes() {
             const searchTerm = document.getElementById('search').value.toLowerCase();
