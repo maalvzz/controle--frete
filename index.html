@@ -499,14 +499,16 @@
 
         .modal-content {
     background: var(--bg-card);
-    padding: 1.5rem;
+    padding: 1.2rem; /* Menor espaçamento interno */
     border-radius: 12px;
-    max-width: 800px; /* antes era 1200px */
-    width: 80%;       /* antes era 95% */
-    max-height: 80vh; /* antes era 90vh */
+    max-width: 850px; /* Diminui a largura máxima */
+    width: 80%;       /* Reduz a proporção da tela */
+    max-height: 80vh; /* Reduz a altura do modal */
     overflow-y: auto;
     border: 1px solid var(--border-color);
+    transform: scale(0.95); /* Deixa levemente menor, como zoom out */
 }
+
 
 
         .modal-header {
