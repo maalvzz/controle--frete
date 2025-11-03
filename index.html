@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Frete</title>
+    <style>
+        :root {
+            --primary: #CC7000;
+            --primary-light: #E68A00;
+            --primary-dark: #B36200;
+            --bg-primary: #000000;
+            --bg-secondary: #000000c7;
+            --bg-card: #1A1A1A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            --border-color: rgba(204, 112, 0, 0.08);
+            --input-bg: #2A2A2A;
+            --success-color: #22C55E;
+            --table-stripe: #1F1F1F;
+            --table-hover: rgba(128, 128, 128, 0.15);
+            --card-shadow: none;
+            --th-bg: #4A4A4A;
+            --th-color: #FFFFFF;
+            --th-border: #5A5A5A;
+            --status-border: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-primary: #FFFFFF;
+                --bg-secondary: #F5F5F5;
+                --bg-card: #FFFFFF;
+                --text-primary: #1A1A1A;
+                --text-secondary: #6B7280;
+                --border-color: #E5E7EB;
+                --input-bg: #F9FAFB;
+                --table-stripe: #FAFAFA;
+                --table-hover: rgba(128, 128, 128, 0.15);
+                --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+                --th-bg: #6B7280;
+                --th-color: #FFFFFF;
+                --th-border: #9CA3AF;
+                --status-border: #E5E7EB;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 1.5rem;
+            border-radius: 12px;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dashboard-card.success {
+            background: linear-gradient(135deg, var(--success-color), #16A34A);
+        }
+
+        .dashboard-card.danger {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+        }
+
+        .dashboard-card h3 {
+            font-size: 0.85rem;
+            opacity: 0.95;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-card .value {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            box-shadow: var(--card-shadow);
+        }
+
+        .card:hover {
+            border-color: rgba(204, 112, 0, 0.3);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            transition: border-color 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-right: 12px;
+            transition: background 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            background: var(--primary-light);
+        }
+
+        button.secondary {
+            background: #4B5563;
+        }
+
+        button.secondary:hover {
+            background: #6B7280;
+        }
+
+        button.danger {
+            background: #DC2626;
+        }
+
+        button.danger:hover {
+            background: #EF4444;
+        }
+
+        button.edit {
+            background: #2563EB;
+        }
+
+        button.edit:hover {
+            background: #3B82F6;
+        }
+
+        button.success {
+            background: #16A34A;
+        }
+
+        button.success:hover {
+            background: #22C55E;
+        }
+
+        button.small {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
+        .month-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: center;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .month-selector button {
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .month-selector button:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .month-selector span {
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-width: 200px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .filter-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 16px 20px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--th-bg);
+            color: var(--th-color);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--th-border);
+        }
+
+        tbody tr {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--table-stripe);
+        }
+
+        tbody tr:hover {
+            background: var(--table-hover);
+        }
+
+        tbody tr.entregue {
+            background: rgba(34, 197, 94, 0.1) !important;
+            border-left: 3px solid var(--success-color);
+        }
+
+        tbody tr.fora-prazo {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border-left: 3px solid #EF4444;
+        }
+
+        td {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .entregue-btn {
+            background: var(--input-bg);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .entregue-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .entregue-btn.checked {
+            background: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+
+        .entregue-btn.checked:hover {
+            background: #16A34A;
+            border-color: #16A34A;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge.em-transito {
+            background: rgba(204, 112, 0, 0.2);
+            color: var(--primary-light);
+            border: 1px solid rgba(204, 112, 0, 0.3);
+        }
+
+        .badge.fora-prazo {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .badge.entregue {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success-color);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-message {
+            padding: 16px;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .status-message.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success-color);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .status-message.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #EF4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .status-message.info {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3B82F6;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 1200px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-section {
+            margin-bottom: 2rem;
+        }
+
+        .info-section h4 {
+            color: var(--primary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .info-box {
+            background: var(--input-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .info-box-label {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .info-box-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .observacao-item {
+            background: var(--input-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .observacao-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .observacao-data {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .observacao-texto {
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem auto;
+                padding: 0 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-grid, .filter-section {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Controle de Frete</h1>
+        </div>
+
+        <div id="statusMessage" class="hidden"></div>
+
+        <div class="dashboard">
+            <div class="dashboard-card success">
+                <h3>Entregas Realizadas</h3>
+                <div class="value" id="totalEntregues">0</div>
+            </div>
+            <div class="dashboard-card">
+                <h3>Em Trânsito</h3>
+                <div class="value" id="totalEmRota">0</div>
+            </div>
+            <div class="dashboard-card danger">
+                <h3>Fora do Prazo</h3>
+                <div class="value" id="totalForaPrazo">0</div>
+            </div>
+        </div>
+
+        <button onclick="openFormModal()" style="margin-bottom: 2rem;">
+            Novo Registro de Frete
+        </button>
+
+        <div class="card">
+            <div class="month-selector">
+                <button onclick="changeMonth(-1)">← Anterior</button>
+                <span id="currentMonth"></span>
+                <button onclick="changeMonth(1)">Próximo →</button>
+            </div>
+
+            <div class="filter-section">
+                <div class="form-group">
+                    <label for="search">Pesquisar</label>
+                    <input type="text" id="search" placeholder="Digite NF, órgão, destino..." oninput="filterFretes()">
+                </div>
+
+                <div class="form-group">
+                    <label for="filterVendedor">Filtrar por Vendedor</label>
+                    <select id="filterVendedor" onchange="filterFretes()">
+                        <option value="">Todos</option>
+                        <option value="Miguel">Miguel</option>
+                        <option value="Roberto">Roberto</option>
+                        <option value="Isaque">Isaque</option>
+                        <option value="Gustavo">Gustavo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="filterTransportadora">Filtrar por Transporte</label>
+                    <select id="filterTransportadora" onchange="filterFretes()">
+                        <option value="">Todas</option>
+                        <option value="TNT Mercurio">TNT Mercurio</option>
+                        <option value="CORREIOS">CORREIOS</option>
+                        <option value="BRASPRESS">BRASPRESS</option>
+                        <option value="CONTINENTAL">CONTINENTAL</option>
+                        <option value="JAMEF">JAMEF</option>
+                        <option value="Fornecedor">Fornecedor</option>
+                        <option value="Entrega Própria">Entrega Própria</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="filterStatus">Filtrar por Status</label>
+                    <select id="filterStatus" onchange="filterFretes()">
+                        <option value="">Todos</option>
+                        <option value="Em Trânsito">Em Trânsito</option>
+                        <option value="Fora do Prazo">Fora do Prazo</option>
+                        <option value="Entrega Realizada">Entrega Realizada</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Registros de Frete</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Entregue</th>
+                            <th>NF</th>
+                            <th>Valor</th>
+                            <th>Vendedor</th>
+                            <th>Transporte</th>
+                            <th>Destino</th>
+                            <th>Entrega</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fretesContainer">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="formModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="formTitle">Novo Registro de Frete</h3>
+                <button class="close-modal" onclick="closeFormModal()">×</button>
+            </div>
+            <form id="freteForm">
+                <input type="hidden" id="editId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="numeroNF">Número da Nota Fiscal *</label>
+                        <input type="text" id="numeroNF" required placeholder="Ex: 3283">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dataEmissao">Data de Emissão *</label>
+                        <input type="date" id="dataEmissao" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numeroDocumento">Número do Documento</label>
+                        <input type="text" id="numeroDocumento" placeholder="Ex: EMPENHO 2025/1896">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valor">Valor da Nota (R$) *</label>
+                        <input type="number" id="valor" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orgao">Nome do Órgão *</label>
+                        <input type="text" id="orgao" required placeholder="Ex: HOSPITAL REGIONAL DE ASSIS">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contatoOrgao">Contato do Órgão</label>
+                        <input type="text" id="contatoOrgao" placeholder="Ex: (18) 3302-6000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vendedor">Vendedor Responsável *</label>
+                        <select id="vendedor" required>
+                            <option value="">Selecione...</option>
+                            <option value="Miguel">Miguel</option>
+                            <option value="Roberto">Roberto</option>
+                            <option value="Isaque">Isaque</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transportadora">Transporte *</label>
+                        <select id="transportadora" required>
+                            <option value="">Selecione...</option>
+                            <option value="TNT Mercurio">TNT Mercurio</option>
+                            <option value="CORREIOS">Correios</option>
+                            <option value="BRASPRESS">Braspress</option>
+                            <option value="CONTINENTAL">Continental</option>
+                            <option value="JAMEF">Jamef</option>
+                            <option value="Fornecedor">Fornecedor</option>
+                            <option value="Entrega Própria">Entrega Própria</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valorFrete">Valor do Frete (R$) *</label>
+                        <input type="number" id="valorFrete" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dataColeta">Data da Coleta *</label>
+                        <input type="date" id="dataColeta" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="destino">Cidade-UF de Destino *</label>
+                        <input type="text" id="destino" required placeholder="Ex: Assis - SP">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dataEntrega">Data de Entrega *</label>
+                        <input type="date" id="dataEntrega" required>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <button type="submit">
+                        <span id="submitIcon">✓</span>
+                        <span id="submitText">Registrar Frete</span>
+                    </button>
+                    <button type="button" class="secondary" onclick="closeFormModal()">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content" style="max-width: 1400px;">
+            <div class="modal-header">
+                <h3>Visualização Completa - NF <span id="modalNF"></span></h3>
+                <button class="close-modal" onclick="closeInfoModal()">×</button>
+            </div>
+            <div id="modalInfoContent"></div>
+        </div>
+    </div>
+
+    <div id="observacoesModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3>⚠️ Observações - NF <span id="obsModalNF"></span></h3>
+                <button class="close-modal" onclick="closeObservacoesModal()">×</button>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <textarea id="novaObservacao" placeholder="Digite sua observação aqui..." style="min-height: 100px; margin-bottom: 1rem;"></textarea>
+                <button onclick="adicionarObservacao()" class="success">Adicionar Observação</button>
+            </div>
+            <div id="listaObservacoes"></div>
+        </div>
+    </div>
+
+    <script>
+        let fretes = [];
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let currentFreteIdForObs = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            setTodayDate();
+            updateMonthDisplay();
+            renderFretes(fretes);
+            updateDashboard();
+            document.getElementById('freteForm').addEventListener('submit', handleSubmit);
+        });
+
+        function loadData() {
+            const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+            const saved = localStorage.getItem(`fretes_${key}`);
+            fretes = saved ? JSON.parse(saved) : [];
+        }
+
+        function saveData() {
+            const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+            localStorage.setItem(`fretes_${key}`, JSON.stringify(fretes));
+        }
+
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dataEmissao').value = today;
+            document.getElementById('dataColeta').value = today;
+        }
+
+        function updateMonthDisplay() {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthName = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+            document.getElementById('currentMonth').textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+        }
+
+        function changeMonth(delta) {
+            currentMonth += delta;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            updateMonthDisplay();
+            loadData();
+            renderFretes(fretes);
+            updateDashboard();
+        }
+
+        function openFormModal(freteId = null) {
+            if (freteId) {
+                const frete = fretes.find(f => f.id === freteId);
+                if (!frete) return;
+
+                document.getElementById('editId').value = frete.id;
+                document.getElementById('numeroNF').value = frete.numeroNF;
+                document.getElementById('dataEmissao').value = frete.dataEmissao;
+                document.getElementById('numeroDocumento').value = frete.numeroDocumento || '';
+                document.getElementById('valor').value = frete.valor;
+                document.getElementById('orgao').value = frete.orgao;
+                document.getElementById('contatoOrgao').value = frete.contatoOrgao || '';
+                document.getElementById('vendedor').value= frete.vendedor;
+                document.getElementById('transportadora').value = frete.transportadora;
+                document.getElementById('valorFrete').value = frete.valorFrete;
+                document.getElementById('dataColeta').value = frete.dataColeta;
+                document.getElementById('destino').value = frete.destino;
+                document.getElementById('dataEntrega').value = frete.dataEntrega;
+
+                document.getElementById('formTitle').textContent = 'Editar Registro';
+                document.getElementById('submitText').textContent = 'Atualizar Registro';
+                document.getElementById('submitIcon').textContent = '✓';
+                } else {
+                document.getElementById('freteForm').reset();
+                setTodayDate();
+                document.getElementById('editId').value = '';
+                document.getElementById('formTitle').textContent = 'Novo Registro de Frete';
+                document.getElementById('submitText').textContent = 'Registrar Frete';
+                document.getElementById('submitIcon').textContent = '✓';
+            }
+
+            document.getElementById('formModal').classList.add('show');
+        }
+
+        function closeFormModal() {
+            document.getElementById('formModal').classList.remove('show');
+            document.getElementById('freteForm').reset();
+            setTodayDate();
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+            const editId = document.getElementById('editId').value;
+            const frete = {
+                id: editId || Date.now().toString(),
+                numeroNF: document.getElementById('numeroNF').value,
+                dataEmissao: document.getElementById('dataEmissao').value,
+                numeroDocumento: document.getElementById('numeroDocumento').value,
+                valor: parseFloat(document.getElementById('valor').value),
+                orgao: document.getElementById('orgao').value,
+                contatoOrgao: document.getElementById('contatoOrgao').value,
+                vendedor: document.getElementById('vendedor').value,
+                transportadora: document.getElementById('transportadora').value,
+                valorFrete: parseFloat(document.getElementById('valorFrete').value),
+                dataColeta: document.getElementById('dataColeta').value,
+                destino: document.getElementById('destino').value,
+                dataEntrega: document.getElementById('dataEntrega').value,
+                entregue: editId ? fretes.find(f => f.id === editId)?.entregue || false : false,
+                observacoes: editId ? fretes.find(f => f.id === editId)?.observacoes || [] : []
+            };
+
+            if (editId) {
+                const index = fretes.findIndex(f => f.id === editId);
+                fretes[index] = frete;
+                showMessage('Registro atualizado com sucesso!', 'success');
+            } else {
+                fretes.push(frete);
+                showMessage('Registro cadastrado com sucesso!', 'success');
+            }
+
+            saveData();
+            renderFretes(fretes);
+            updateDashboard();
+            closeFormModal();
+        }
+
+        function toggleEntregue(id) {
+            const frete = fretes.find(f => f.id === id);
+            if (frete) {
+                frete.entregue = !frete.entregue;
+                saveData();
+                renderFretes(fretes);
+                updateDashboard();
+                showMessage(
+                    frete.entregue ? 'Entrega confirmada!' : 'Entrega desmarcada',
+                    'success'
+                );
+            }
+        }
+
+        function deleteFrete(id) {
+            if (confirm('Tem certeza que deseja excluir este registro?')) {
+                fretes = fretes.filter(f => f.id !== id);
+                saveData();
+                renderFretes(fretes);
+                updateDashboard();
+                showMessage('Registro excluído com sucesso!', 'success');
+            }
+        }
+
+        function getStatus(frete) {
+            if (frete.entregue) return 'Entregue';
+            
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            const dataEntrega = new Date(frete.dataEntrega + 'T00:00:00');
+            
+            if (dataEntrega < hoje) return 'Fora do Prazo';
+            return 'Em Trânsito';
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        }
+
+        function formatDate(dateStr) {
+            const [year, month, day] = dateStr.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        function formatDateTime(date) {
+            return new Date(date).toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function renderFretes(fretesArray) {
+            const container = document.getElementById('fretesContainer');
+            
+            const sortedFretes = [...fretesArray].sort((a, b) => {
+                const nfA = parseInt(a.numeroNF) || 0;
+                const nfB = parseInt(b.numeroNF) || 0;
+                return nfA - nfB;
+            });
+            
+            if (sortedFretes.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 3rem;">
+                            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Nenhum registro encontrado</p>
+                            <p>Adicione um novo envio para começar o monitoramento</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            container.innerHTML = sortedFretes.map(frete => {
+                const status = getStatus(frete);
+                let rowClass = '';
+                let badgeClass = 'em-transito';
+                
+                if (status === 'Entregue') {
+                    rowClass = 'entregue';
+                    badgeClass = 'entregue';
+                } else if (status === 'Fora do Prazo') {
+                    rowClass = 'fora-prazo';
+                    badgeClass = 'fora-prazo';
+                }
+
+                const checkIcon = frete.entregue ? '✓' : '✓';
+                const checkClass = frete.entregue ? 'checked' : '';
+
+                return `
+                    <tr class="${rowClass}">
+                        <td>
+                            <button class="entregue-btn ${checkClass}" onclick="toggleEntregue('${frete.id}')" title="${frete.entregue ? 'Desmarcar entrega' : 'Marcar como entregue'}">
+                                ${checkIcon}
+                            </button>
+                        </td>
+                        <td><strong>${frete.numeroNF}</strong></td>
+                        <td>${formatCurrency(frete.valor)}</td>
+                        <td>${frete.vendedor}</td>
+                        <td>${frete.transportadora}</td>
+                        <td>${frete.destino}</td>
+                        <td>${formatDate(frete.dataEntrega)}</td>
+                        <td><span class="badge ${badgeClass}">${status}</span></td>
+                        <td>
+                            <div class="actions">
+                                <button class="small" onclick="openInfoModal('${frete.id}')">Ver</button>
+                                <button class="edit small" onclick="openFormModal('${frete.id}')">Editar</button>
+                                <button class="small" onclick="openObservacoesModal('${frete.id}')" style="background: transparent; border: 2px solid #F59E0B; color: #F59E0B;" title="Observações">⚠️</button>
+                                <button class="danger small" onclick="deleteFrete('${frete.id}')">Excluir</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateDashboard() {
+            const entregues = fretes.filter(f => f.entregue).length;
+            const foraPrazo = fretes.filter(f => !f.entregue && getStatus(f) === 'Fora do Prazo').length;
+            const emRota = fretes.filter(f => !f.entregue && getStatus(f) === 'Em Trânsito').length;
+
+            document.getElementById('totalEntregues').textContent = entregues;
+            document.getElementById('totalForaPrazo').textContent = foraPrazo;
+            document.getElementById('totalEmRota').textContent = emRota;
+        }
+
+        function filterFretes() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const vendedorFilter = document.getElementById('filterVendedor').value;
+            const transportadoraFilter = document.getElementById('filterTransportadora').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            const filtered = fretes.filter(frete => {
+                const matchSearch = 
+                    frete.numeroNF.toLowerCase().includes(searchTerm) ||
+                    frete.orgao.toLowerCase().includes(searchTerm) ||
+                    frete.destino.toLowerCase().includes(searchTerm) ||
+                    (frete.numeroDocumento && frete.numeroDocumento.toLowerCase().includes(searchTerm));
+
+                const matchVendedor = !vendedorFilter || frete.vendedor === vendedorFilter;
+                const matchTransportadora = !transportadoraFilter || frete.transportadora === transportadoraFilter;
+                const matchStatus = !statusFilter || getStatus(frete) === statusFilter;
+
+                return matchSearch && matchVendedor && matchTransportadora && matchStatus;
+            });
+
+            renderFretes(filtered);
+        }
+
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('statusMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = `status-message ${type}`;
+            messageDiv.classList.remove('hidden');
+
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 4000);
+        }
+
+        function openInfoModal(freteId) {
+            const frete = fretes.find(f => f.id === freteId);
+            if (!frete) return;
+
+            document.getElementById('modalNF').textContent = frete.numeroNF;
+            
+            const status = getStatus(frete);
+            let statusColor = 'var(--primary)';
+            if (status === 'Entrega Realizada') statusColor = 'var(--success-color)';
+            else if (status === 'Fora do Prazo') statusColor = '#EF4444';
+
+            const infoHTML = `
+                <div class="info-section">
+                    <h4>Dados da Nota Fiscal</h4>
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <div class="info-box-label">Número da NF</div>
+                            <div class="info-box-value">${frete.numeroNF}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-box-label">Data de Emissão</div>
+                            <div class="info-box-value">${formatDate(frete.dataEmissao)}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-box-label">Número do Documento</div>
+                            <div class="info-box-value">${frete.numeroDocumento || 'Não informado'}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-box-label">Valor da Nota</div>
+                            <div class="info-box-value" style="color: var(--primary);">${formatCurrency(frete.valor)}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-box-label">Status Atual</div>
+                            <div class="info-box-value" style="color: ${statusColor};">${status}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h4>Responsável e Destino</h4>
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <div class="info-box-label">Vendedor Responsável</div>
+                            <div class="info-box-value">${frete.vendedor}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-box-label">Nome do Órgão</div>
+                            <div class="info-box-value">${frete.orgao}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-box-label">Contato do Órgão</div>
+                            <div class="info-box-value">${frete.contatoOrgao || 'Não informado'}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-box-label">Cidade-UF de Destino</div>
+                            <div class="info-box-value">${frete.destino}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h4>Informações de Transporte</h4>
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <div class="info-box-label">Transportadora</div>
+                            <div class="info-box-value">${frete.transportadora}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-box-label">Valor do Frete</div>
+                            <div class="info-box-value">${formatCurrency(frete.valorFrete)}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-box-label">Data da Coleta</div>
+                            <div class="info-box-value">${formatDate(frete.dataColeta)}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-box-label">Data de Entrega</div>
+                            <div class="info-box-value">${formatDate(frete.dataEntrega)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalInfoContent').innerHTML = infoHTML;
+            document.getElementById('infoModal').classList.add('show');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.remove('show');
+        }
+
+        function openObservacoesModal(freteId) {
+            currentFreteIdForObs = freteId;
+            const frete = fretes.find(f => f.id === freteId);
+            if (!frete) return;
+
+            document.getElementById('obsModalNF').textContent = frete.numeroNF;
+            document.getElementById('novaObservacao').value = '';
+            
+            renderObservacoes(frete);
+            document.getElementById('observacoesModal').classList.add('show');
+        }
+
+        function closeObservacoesModal() {
+            document.getElementById('observacoesModal').classList.remove('show');
+            currentFreteIdForObs = null;
+        }
+
+        function renderObservacoes(frete) {
+            const container = document.getElementById('listaObservacoes');
+            const observacoes = frete.observacoes || [];
+
+            if (observacoes.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhuma observação registrada ainda.</p>';
+                return;
+            }
+
+            const sortedObs = [...observacoes].sort((a, b) => new Date(b.data) - new Date(a.data));
+
+            container.innerHTML = sortedObs.map((obs, index) => `
+                <div class="observacao-item">
+                    <div class="observacao-header">
+                        <div class="observacao-data">${formatDateTime(obs.data)}</div>
+                        <button class="danger small" onclick="excluirObservacao(${observacoes.indexOf(obs)})" style="margin: 0; padding: 4px 8px;">Excluir</button>
+                    </div>
+                    <div class="observacao-texto">${obs.texto}</div>
+                </div>
+            `).join('');
+        }
+
+        function adicionarObservacao() {
+            const texto = document.getElementById('novaObservacao').value.trim();
+            if (!texto) {
+                showMessage('Digite uma observação antes de adicionar!', 'error');
+                return;
+            }
+
+            const frete = fretes.find(f => f.id === currentFreteIdForObs);
+            if (!frete) return;
+
+            if (!frete.observacoes) {
+                frete.observacoes = [];
+            }
+
+            frete.observacoes.push({
+                data: new Date().toISOString(),
+                texto: texto
+            });
+
+            saveData();
+            renderObservacoes(frete);
+            renderFretes(fretes);
+            document.getElementById('novaObservacao').value = '';
+            showMessage('Observação adicionada com sucesso!', 'success');
+        }
+
+        function excluirObservacao(index) {
+            if (!confirm('Tem certeza que deseja excluir esta observação?')) return;
+
+            const frete = fretes.find(f => f.id === currentFreteIdForObs);
+            if (!frete) return;
+
+            frete.observacoes.splice(index, 1);
+            saveData();
+            renderObservacoes(frete);
+            renderFretes(fretes);
+            showMessage('Observação excluída!', 'success');
+        }
+
+        window.onclick = function(event) {
+            const formModal = document.getElementById('formModal');
+            const infoModal = document.getElementById('infoModal');
+            const obsModal = document.getElementById('observacoesModal');
+            
+            if (event.target === formModal) {
+                closeFormModal();
+            }
+            if (event.target === infoModal) {
+                closeInfoModal();
+            }
+            if (event.target === obsModal) {
+                closeObservacoesModal();
+            }
+        }
+    </script>
+</body>
+</html>
